@@ -11,7 +11,7 @@ from _remote import ffi, lib
 
 util = None
 
-VERSION = 'v1.7.0'
+VERSION = 'v1.8.0'
 LOGFILE = 'remote.log'
 CONFIGFILE = 'config.ini'
 
@@ -23,7 +23,8 @@ SYMTYPES = {
     'canvasH_': 'int *',
     'userData_': 'void **',
     'WorldClient::handleWindowEvent': 'void *',
-    'UIElementContainer::handleWindowEvent': 'void *'
+    'UIElementContainer::handleWindowEvent': 'void *',
+    'keyboardCallback': 'void *',
 }
 
 
