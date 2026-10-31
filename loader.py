@@ -36,6 +36,7 @@ STARTUP_OFFSET = int(STARTUP_OFFSET.strip(), 16)
 SYMLIST = '''
 stage window_ canvasW_ canvasH_
 mouseMoveCallback mouseButtonCallback windowEventCallback
+keyboardCallback
 userData_
 
 XDL_GetWindowSize
@@ -88,7 +89,7 @@ def resolveSymbols(exepath):
     return offsets
 
 
-def launch(exepath):
+def launch(exepath, flags):
     # on Linux and MacOS, use ld/dyld
     if platform.system() == 'Linux':
         os.environ['LD_PRELOAD'] = REMOTEPATH
@@ -98,7 +99,7 @@ def launch(exepath):
 
     # start the game
     gpop = subprocess.Popen(
-        [exepath], stderr=subprocess.STDOUT,
+        [exepath, flags], stderr=subprocess.STDOUT,
         stdout=subprocess.PIPE, cwd=os.path.dirname(exepath))
 
     # on Windows, inject into the running process
@@ -134,6 +135,11 @@ def runLoader(exepath=''):
     conf = configparser.ConfigParser()
     conf.read(CONFFILE)
     exepath = conf.get('general', 'game', fallback=exepath)
+    flags = conf.get('general', 'flags', fallback='')
+    if flags == 'None':
+        flags = ''
+    else:
+        logging.info('flags: ' + str(flags))
     mipmaps = conf.getboolean('general', 'mipmaps', fallback=False)
     keepopen = conf.getboolean('general', 'keep_open', fallback=False)
 
@@ -190,7 +196,7 @@ def runLoader(exepath=''):
         os.unlink(rlogpath)
 
     # start the game
-    gpop = launch(exepath)
+    gpop = launch(exepath, flags)
 
     if not gpop:
         logging.error('failed to launch')
